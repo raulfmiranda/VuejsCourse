@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Vuejs Udemy Course</title>
+    <script src="../vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <input type="text" v-model="name">
+        <p>{{ name }}</p>
+        <button v-on:click="counter++">Increase</button>
+        <button v-on:click="counter--">Decrease</button>
+        <button v-on:click="secondCounter++">Increase Second</button>
+        <p>Counter: {{ counter }} | {{ secondCounter }}</p>
+        <p>Result: {{ result() }} | {{ output }}</p>
+        <button @click="changeLink">Click to Change Link</button>
+        <a :href="link">Link</a>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                name: 'Max',
+                counter: 0,
+                secondCounter: 0,
+                link: 'http://google.com'
+            },
+            computed: { // Caches result. Does not need recalculate.
+                output: function() {
+                    console.log('Computed');
+                    return this.counter > 5 ? 'Greater 5' : 'Smaller 5'
+                }
+            },
+            watch: { // executes after this.counter changes
+                counter: function(value) {
+                    var vm = this; // pass Vue instance to closure
+                    setTimeout(function() {
+                        vm.counter = 0;
+                    }, 2000);
+                }
+            },
+            methods: {
+                result: function() {
+                    console.log('Methods');
+                    return this.counter > 5 ? 'Greater 5' : 'Smaller 5'
+                },
+                changeLink: function() {
+                    this.link = 'http://apple.com'
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

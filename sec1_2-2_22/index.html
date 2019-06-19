@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Vuejs Udemy Course</title>
+    <script src="../vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <p v-once>{{ title }}</p>
+        <p>{{ sayHello() }} - <a v-bind:href="link">Google</a></p>
+        <input type="text" v-on:input="changeTitle">
+        <p v-html="finishedLink"></p>
+        <p>{{ counter }} {{ counter > 10 ? 'Greater than 10' : 'Smaller than 10' }}</p>
+        <button v-on:click="increase(2, $event)">Click me</button>
+        <button v-on:click="counter++">Click me</button>
+        <p v-on:mousemove="updateCoordinate">
+            Coordinates: {{ x }} / {{ y }}
+            - <span v-on:mousemove.stop="">DEAD SPOT (stop propagation)</span>
+        </p>
+        <input type="text" v-on:keyup.enter.space="alertMe">
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                title: 'Hello World!',
+                link: 'http://google.com',
+                finishedLink: '<a href="http://google.com">Google</a>',
+                counter: 0,
+                x: 0,
+                y: 0
+            },
+            methods: {
+                alertMe: function() {
+                    alert('Alert!');
+                },
+                updateCoordinate: function(event) {
+                    this.x = event.clientX;
+                    this.y = event.clientY;
+                },
+                sayHello: function() {
+                    this.title = 'Hello!';
+                    return this.title;
+                },
+                changeTitle: function (event) {
+                    this.title = event.target.value;
+                },
+                increase: function(step, event) {
+                    this.counter += step;
+                    console.log(event.target);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
