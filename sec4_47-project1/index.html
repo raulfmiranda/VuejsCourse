@@ -15,8 +15,8 @@
             <div class="small-6 columns">
                 <h1 class="text-center">YOU</h1>
                 <div class="healthbar">
-                    <div class="healthbar text-center" :style="[healthBarStyle, {width: youHealth + '%'}]">
-                        {{youHealth}}
+                    <div class="healthbar text-center" :style="[healthBarStyle, {width: playerHealth + '%'}]">
+                        {{playerHealth}}
                     </div>
                 </div>
             </div>
@@ -31,22 +31,22 @@
         </section>
         <section v-if="!gameStarted" class="row controls">
             <div class="small-12 columns">
-                <button id="start-game" @click="gameStarted = true">START NEW GAME</button>
+                <button id="start-game" @click="setInitialState">START NEW GAME</button>
             </div>
         </section>
         <section class="row controls" v-else>
             <div class="small-12 columns">
-                <button id="attack" @click="attackStarted = true">ATTACK</button>
-                <button id="special-attack" @click="attackStarted = true">SPECIAL ATTACK</button>
-                <button id="heal">HEAL</button>
-                <button id="give-up">GIVE UP</button>
+                <button id="attack" @click="attack">ATTACK</button>
+                <button id="special-attack" @click="attack">SPECIAL ATTACK</button>
+                <button id="heal" @click="heal">HEAL</button>
+                <button id="give-up" @click="gameStarted = false">GIVE UP</button>
             </div>
         </section>
         <section v-if="attackStarted" class="row log">
             <div class="small-12 columns">
                 <ul>
-                    <li v-for="h in gameHistory">
-                        {{h}}
+                    <li v-for="(turn, i) in turns">
+                        <div :class="turnStyle(i)">{{turn}}</div>
                     </li>
                 </ul>
             </div>
@@ -56,22 +56,98 @@
         new Vue({
             el: '#app',
             data: {
-                youHealth: 100,
+                playerHealth: 100,
                 monsterHealth: 100,
-                gameStarted: true,
+                gameStarted: false,
                 attackStarted: false,
-                gameHistory: [
-                    'MONSTER HITS PLAYER FOR 5',
-                    'PLAYER HITS MONSTER FOR 7'
-                ]
+                turns: []
             },
             computed: {
-                healthBarStyle: function () {
+                healthBarStyle: function() {
                     return {
                         backgroundColor: 'green',
                         margin: 0,
                         color: 'white'
                     };
+                }
+            },
+            methods: {
+                attack: function(event) {
+
+                    let maxPlayerHit = 10;
+                    let minPlayerHit = 1;
+                    if (event.target.id.includes('special')) {
+                        maxPlayerHit = 20;
+                        minPlayerHit = 11;
+                    }
+                    
+                    this.attackStarted = true;
+                    const maxMonsterHit = 10;
+                    const playerHit = Math.floor(Math.random() * (maxPlayerHit - minPlayerHit + 1) + minPlayerHit);
+                    const monsterHit = Math.floor(Math.random() * maxMonsterHit) + 1;
+
+                    if (this.playerHealth < monsterHit) {
+                        this.playerHealth = 0;
+                        const ok = confirm('You lost! New Game?');
+                        if (ok) {
+                            this.setInitialState();
+                        }
+                        this.gameStarted = false;
+                        return;
+                    }
+
+                    if (this.monsterHealth < playerHit) {
+                        this.monsterHealth = 0;
+                        const ok = confirm('You win! New Game?');
+                        if (ok) {
+                            this.setInitialState();
+                        }
+                        this.gameStarted = false;
+                        return;
+                    }
+
+                    if (this.playerHealth > 0) {
+                        this.playerHealth -= monsterHit;
+                    }
+
+                    if (this.monsterHealth > 0) {
+                        this.monsterHealth -= playerHit;
+                    }
+
+                    this.turns.push("MONSTER HITS PLAYER FOR " + monsterHit);
+                    this.turns.push("PLAYER HITS MONSTER FOR " + playerHit);
+                },
+                heal: function() {
+                    
+                    const playerHeal = 10;
+                    const maxMonsterHit = 10;
+                    const monsterHit = Math.floor(Math.random() * maxMonsterHit) + 1;
+                    const gap = monsterHit - playerHeal;
+                    
+                    if (this.playerHealth < gap) {
+                        this.playerHealth = 0;
+                        this.setInitialState();
+                    } else if (this.playerHealth - monsterHit + playerHeal > 100) {
+                        this.playerHealth = 100;
+                    } else {
+                        this.playerHealth -= gap;
+                    }
+                    this.turns.push("MONSTER HITS PLAYER FOR " + monsterHit);
+                    this.turns.push("PLAYER HEALS HIMSELF FOR " + playerHeal);
+                },
+                turnStyle: function(i) {
+                    if ( i % 2 == 0 ) {
+                        return 'monster-turn';
+                    } else {
+                        return 'player-turn';
+                    }
+                },
+                setInitialState: function() {
+                    this.playerHealth = 100;
+                    this.monsterHealth = 100;
+                    this.gameStarted = true;
+                    this.attackStarted = false;
+                    this.turns = [];
                 }
             }
         });
