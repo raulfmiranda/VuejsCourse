@@ -72,7 +72,7 @@ new Vue({
             return Math.floor(Math.random() * (max - min + 1) + min);
         },
         checkWin: function (playerHit, monsterHit) {
-            if (this.monsterHealth < playerHit) {
+            if (this.monsterHealth <= playerHit) {
                 this.monsterHealth = 0;
                 const ok = confirm('You win! New Game?');
                 if (ok) {
@@ -80,7 +80,7 @@ new Vue({
                 }
                 this.gameStarted = false;
                 return true;
-            } else if (this.playerHealth < monsterHit) {
+            } else if (this.playerHealth <= monsterHit) {
                 this.playerHealth = 0;
                 const ok = confirm('You lost! New Game?');
                 if (ok) {
