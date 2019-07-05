@@ -27,10 +27,14 @@
         },
         methods: {
             newQuote(quote) {
-                // TODO newQuote(quote)
+                if (this.quotes.length < 10) {
+                    this.quotes.push(quote);
+                } else {
+                    alert('Too many Quotes! Delete some before adding new ones!');
+                }
             },
             deleteQuote(index) {
-                // TODO deleteQuote(index)
+                this.quotes.splice(index, 1);
             }
         },
         components: {

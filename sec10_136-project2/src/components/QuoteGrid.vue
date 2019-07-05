@@ -14,12 +14,8 @@
         },
         methods: {
             deleteQuote(index) {
-                // TODO deleteQuote(index)
+                this.$emit('quoteDeleted', index);
             }
         }
     }
 </script>
-
-<style>
-
-</style>
